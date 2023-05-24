@@ -1,6 +1,7 @@
 #include <unistd.h> 
 #include <stdlib.h>
 #include <string.h>
+#include "shell.h"
 
 /**
  * print_prompt - prints the prompt string

@@ -1,60 +1,83 @@
 #ifndef SHELL_H
 #define SHELL_H
 
-#include <stddef.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include <signal.h>
 #include <sys/wait.h>
 
-#define MAX_SIZE 100
 
 
- int i;
+extern char **environ;
 
-typedef struct info
+/**
+ * struct Node - Struct environment variable
+ * @name: the environment name
+ * @value: the envirornment value
+ * @next: a pointer to the next node
+ */
+
+typedef struct Node
 {
-	int argc;
-    char argv[100];
-} info_t;
+	char *name;
+	char *value;
+	struct Node *next;
+} Node_t;
 
-typedef struct list
+/**
+ * struct buildin - Struct build-in commands
+ * @cmd: The build in command
+ * @func: the function associated
+ */
+typedef struct buildin
 {
-    int readfd;
-} list_t;
-
-int calculate_age(int birth_year);
-const char *get_age_group(int age);
-int main(void);
-int is_interactive(info_t *info);
-int is_separator(char c, char *delimiters);
-int is_alpha_character(int c);
-int string_to_integer(char *s);
-int _myexit(info_t *info);
-int _mycd(info_t *info);
-int _myhelp(info_t *info);
-int _myhistory(info_t *info);
-int unset_alias(info_t *info, char *str);
-int set_alias(info_t *info, char *str);
-int print_alias(list_t *node);
-int _myenv(info_t *info);
-char *_getenv(info_t *info, const char *name);
-int _myunsetenv(info_t *info);
-int populate_env_list(info_t *info);
-void _eputs(char *str);
-int _eputchar(char c);
-int _putfd(char c, int fd);
-int _putsfd(char *str, int fd);
-int _erratoi(char *s);
-void print_error(info_t *info, char *estr);
-int print_d(int input, int fd);
-char *convert_number(long int num, int base, int flags);
-void remove_comments(char *buf);
+	char *cmd;
+	int (*func)(char *exe, int ac, char **av, char **e, int s);
+} buildin_t;
 
 
-#define WRITE_BUF_SIZE 1024
-#define BUF_FLUSH '\n'
+int _strlen(char *str);
+int isDelim(char c, const char *delim);
+int tokenCount(char *str, const char *delim);
+char **_strtok(char *str, const char *delim);
+char *_strdup(char *str);
+char *_strchr(char *str, char c);
+char *_strncat(char *dest, char *src, size_t n);
+char *_memcpy(char *dest, char *src, size_t n);
+void *_realloc(void *ptr, size_t old_size, size_t new_size);
+int reallocate(char **lineptr, ssize_t n);
+char *_strcpy(char *dest, char *src);
+char *_strcat(char *str1, char *str2);
+int _strcmp(char *str1, const char *str2);
+void free_list(char **ptr, int i);
+int array_len(char **args);
+int _atoi(char *s);
+int _isdigit(int c);
+void sigign(int signal);
+char **parse_input(char *lineptr, char **e, int s);
+void print_prompt(void);
+void free_args(char **av);
+int execmd(char *exe, char **av, char **e);
+void print_error(char *exe, char *desc);
+void buildPath(char *dirPath, char *cmd, char *path);
+char *_which(char *cmd, char *envPath);
+char *_getenv(const char *name, char **e);
+int print_cmd_not_found(char *exe, char **av);
+void execute_exit(int status, char **av, char *line);
+void ignore_comments(char *lineptr);
+void free_node(Node_t *node);
+int replace_variables(char **args, char **e, int s);
+
+/* Buildin functions */
+int my_env(char *exe, int ac, char **as, char **e, int s);
+int my_exit(char *exe, int ac, char **as, char **e, int s);
+int (*get_buildin_func(char *c))(char *x, int a, char **v, char **e, int s);
+
+
 
 #endif

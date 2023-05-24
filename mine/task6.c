@@ -39,7 +39,7 @@ int _erratoi(char *s)
  */
 void print_error(info_t *info, char *estr)
 {
-	_puts(info->fname);
+	_eputs(info->fname);
 	_puts(": ");
 	_puts(info->argv[0]);
 	_puts(": ");
@@ -56,7 +56,7 @@ void print_error(info_t *info, char *estr)
  */
 int print_d(int input, int fd)
 {
-	int (*__putchar)(char) = _putchar;
+	int (*__putchar)(char) = __putchar;
 	int i, count = 0;
 	unsigned int _abs_, current;
 
